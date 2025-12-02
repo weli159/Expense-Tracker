@@ -1,41 +1,50 @@
 import express from "express";
 import cors from "cors";
-import { connectToDb } from "./db/db.js";
+import { connectDB } from "./DB/Database.js";
+import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import morgan from "morgan";
+import transactionRoutes from "./Routers/Transactions.js";
+import userRoutes from "./Routers/userRouter.js";
+import path from "path";
 
-// Load config
-dotenv.config();
-
+dotenv.config({ path: "./config/config.env" });
 const app = express();
-const PORT = process.env.PORT || 5000;
+
+const port = process.env.PORT;
+
+connectDB();
+
+const allowedOrigins = [
+  "https://main.d1sj7cd70hlter.amplifyapp.com",
+  "https://expense-tracker-app-three-beryl.vercel.app",
+  // add more origins as needed
+];
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+app.use(morgan("dev"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-// Placeholder for Routes (Students B & D will uncomment these)
-// import userRoutes from "./routes/userRoute.js";
-// import transactionRoutes from "./routes/transactions.js";
-// app.use("/api/auth", userRoutes);
-// app.use("/api/v1", transactionRoutes);
+// Router
+app.use("/api/v1", transactionRoutes);
+app.use("/api/auth", userRoutes);
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ 
-        success: false, 
-        message: "Internal Server Error",
-        error: err.message 
-    });
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
-// Start Server
-const server = () => {
-    connectToDb();
-    app.listen(PORT, () => {
-        console.log(`Server listening on http://localhost:${PORT}`);
-    });
-};
-
-server();
-
-export default app; // Export for testing
+app.listen(port, () => {
+  console.log(`Server is listening on http://localhost:${port}`);
+});
