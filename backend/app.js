@@ -14,9 +14,9 @@ app.use(express.json());
 app.use(cors());
 
 // Placeholder for Routes (Students B & D will uncomment these)
-// import userRoutes from "./routes/userRoute.js";
+import userRoutes from "./routes/userRoute.js";
 // import transactionRoutes from "./routes/transactions.js";
-// app.use("/api/auth", userRoutes);
+ app.use("/api/auth", userRoutes);
 // app.use("/api/v1", transactionRoutes);
 
 app.use((err, req, res, next) => {

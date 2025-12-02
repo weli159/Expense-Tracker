@@ -1,10 +1,10 @@
-// Define the base URL for the backend
+// frontend/src/utils/ApiRequest.js
 export const host = "http://localhost:5000";
 
-// Auth Routes
-export const registerRoute = `${host}/api/auth/register`;
-export const loginRoute = `${host}/api/auth/login`;
-export const setAvatarRoute = `${host}/api/auth/setAvatar`;
+// Auth Routes (Renamed to match your Login/Register.js imports)
+export const registerAPI = `${host}/api/auth/register`;
+export const loginAPI = `${host}/api/auth/login`;
+export const setAvatarAPI = `${host}/api/auth/setAvatar`;
 export const allUsersRoute = `${host}/api/auth/allusers`;
 
 // Transaction Routes
