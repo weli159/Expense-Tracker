@@ -261,4 +261,8 @@ const TableData = (props) => {
   );
 };
 
+<<<<<<< HEAD
 export default TableData;
+=======
+export default TableData;
+>>>>>>> 403ebb8dc49ae97a16338dbe30132bce5f9bea86

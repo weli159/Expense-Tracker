@@ -128,4 +128,8 @@ const ModelForm = ({transaction, onClose, isShow}) => {
   );
 };
 
+<<<<<<< HEAD
 export default ModelForm;
+=======
+export default ModelForm;
+>>>>>>> 403ebb8dc49ae97a16338dbe30132bce5f9bea86

@@ -1,25 +1,20 @@
 import React, { useState, useEffect, useCallback } from "react";
-
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import spinner from "../../assets/gg.gif";
+// FIX 1: Removed the missing gif import
+// import spinner from "../../assets/gg.gif"; 
 import "./avatar.css";
 import { Button } from "react-bootstrap";
 import { setAvatarAPI } from "../../utils/ApiRequest.js";
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
+// FIX 2: Import the Spinner component you created
+import Spinner from "../../components/Spinner"; 
 
-// import Buffer from "buffer";
-const {
-  uniqueNamesGenerator,
-  colors,
-  animals,
-  countries,
-  names,
-  languages,
-} = require("unique-names-generator");
+// FIX 3: Use 'import' instead of 'require' for unique-names-generator
+import { uniqueNamesGenerator, colors, animals, countries, names, languages } from "unique-names-generator";
 
 const SetAvatar = () => {
   const sprites = [
@@ -58,6 +53,9 @@ const SetAvatar = () => {
   const [selectedAvatar, setSelectedAvatar] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const [selectedSprite, setSelectedSprite] = React.useState(sprites[0]);
+  
+  // State to store the generated avatar URLs
+  const [imgURL, setImgURL] = useState([]);
 
   useEffect(() => {
     if (!localStorage.getItem("user")) {
@@ -67,41 +65,35 @@ const SetAvatar = () => {
 
   const randomName = () => {
     let shortName = uniqueNamesGenerator({
-      dictionaries: [animals, colors, countries, names, languages], // colors can be omitted here as not used
+      dictionaries: [animals, colors, countries, names, languages],
       length: 2,
     });
-    // console.log(shortName);
-
     return shortName;
   };
 
-  const [imgURL, setImgURL] = React.useState([
-    `https://api.dicebear.com/7.x/${sprites[0]}/svg?seed=${randomName()}`,
-    `https://api.dicebear.com/7.x/${sprites[0]}/svg?seed=${randomName()}`,
-    `https://api.dicebear.com/7.x/${sprites[0]}/svg?seed=${randomName()}`,
-    `https://api.dicebear.com/7.x/${sprites[0]}/svg?seed=${randomName()}`,
-  ]);
+  // FIX 4: Move the initial avatar generation into useEffect to avoid infinite loops or stale state
+  useEffect(() => {
+    const data = [];
+    for (let i = 0; i < 4; i++) {
+      data.push(`https://api.dicebear.com/7.x/${sprites[0]}/svg?seed=${randomName()}`);
+    }
+    setImgURL(data);
+  }, []);
 
   const handleSpriteChange = (e) => {
-    setSelectedSprite(() => {
-      if (e.target.value.length > 0) {
+    const sprite = e.target.value;
+    setSelectedSprite(sprite);
+    if (sprite.length > 0) {
         setLoading(true);
         const imgData = [];
         for (let i = 0; i < 4; i++) {
-          imgData.push(
-            `https://api.dicebear.com/7.x/${
-              e.target.value
-            }/svg?seed=${randomName()}`
-          );
+            imgData.push(
+            `https://api.dicebear.com/7.x/${sprite}/svg?seed=${randomName()}`
+            );
         }
-
         setImgURL(imgData);
-        // console.log(imgData);
         setLoading(false);
-      }
-
-      return e.target.value;
-    });
+    }
   };
 
   const setProfilePicture = async () => {
@@ -109,8 +101,7 @@ const SetAvatar = () => {
       toast.error("Please select an avatar", toastOptions);
     } else {
       const user = JSON.parse(localStorage.getItem("user"));
-      // console.log(user);
-
+      
       const { data } = await axios.post(`${setAvatarAPI}/${user._id}`, {
         image: imgURL[selectedAvatar],
       });
@@ -128,7 +119,6 @@ const SetAvatar = () => {
   };
 
   const particlesInit = useCallback(async (engine) => {
-    // console.log(engine);
     await loadFull(engine);
   }, []);
 
@@ -138,7 +128,7 @@ const SetAvatar = () => {
 
   return (
     <>
-      <div style={{ position: "relative", overflow: "hidden" }}>
+      <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh" }}>
         <Particles
           id="tsparticles"
           init={particlesInit}
@@ -207,18 +197,8 @@ const SetAvatar = () => {
         />
 
         {loading === true ? (
-          <>
-            {/* <Container></Container> */}
-            <div
-              className="container containerBox"
-              h={"100vh"}
-              style={{ position: "relative", zIndex: "2 !important" }}
-            >
-              <div className="avatarBox">
-                <image src={spinner} alt="Loading"></image>
-              </div>
-            </div>
-          </>
+          // FIX 5: Use the Spinner Component instead of the missing GIF
+          <Spinner />
         ) : (
           <>
             <div
@@ -229,23 +209,10 @@ const SetAvatar = () => {
                 <h1 className="text-center text-white mt-5">
                   Choose Your Avatar
                 </h1>
-                {/* <div className="imgBox">
-                        
-                        {imgURL.map((image, index)=> {
-
-                            console.log(image);
-                            return(
-                                <img key={index} src={image} alt="" className={`avatar ${selectedAvatar === index ? "selected" : ""} img-circle imgAvatar`} onClick={() => setSelectedAvatar(index)} width="250px" height="250px"/>
-                            )
-                        })}
-                            
-                        
-
-                    </div> */}
+                
                 <div className="container">
                   <div className="row">
                     {imgURL.map((image, index) => {
-                      console.log(image);
                       return (
                         <div key={index} className="col-lg-3 col-md-6 col-6">
                           <img
@@ -266,6 +233,7 @@ const SetAvatar = () => {
                 <select
                   onChange={handleSpriteChange}
                   className="form-select mt-5"
+                  value={selectedSprite}
                 >
                   {sprites.map((sprite, index) => (
                     <option value={sprite} key={index}>

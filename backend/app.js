@@ -37,9 +37,17 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+<<<<<<< HEAD
 // Router
 app.use("/api/v1", transactionRoutes);
 app.use("/api/auth", userRoutes);
+=======
+// Placeholder for Routes (Students B & D will uncomment these)
+import userRoutes from "./routes/userRoute.js";
+// import transactionRoutes from "./routes/transactions.js";
+ app.use("/api/auth", userRoutes);
+// app.use("/api/v1", transactionRoutes);
+>>>>>>> 403ebb8dc49ae97a16338dbe30132bce5f9bea86
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
