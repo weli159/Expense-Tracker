@@ -3,6 +3,7 @@ import Transaction from "../models/TransactionModel.js";
 import User from "../models/UserSchema.js";
 import moment from "moment";
 
+
 export const addTransactionController = async (req, res) => {
     try {
         const {
@@ -66,56 +67,46 @@ export const addTransactionController = async (req, res) => {
     }
 };
 
-export const getAllTransactionController = async (req, res) => {
+export const getTransactions = async (req, res) => {
     try {
-        const { userId, type, frequency, startDate, endDate } = req.body;
+        const { frequency, selectedDate, type, userId } = req.body;
 
-        console.log(userId, type, frequency, startDate, endDate);
-
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        // Create a query object with the user and type conditions
+        // 1. Initialize query with user ID
         const query = {
             user: userId,
         };
 
-        if (type !== 'all') {
-            query.transactionType = type;
-        }
-
-        // Add date conditions based on 'frequency' and 'custom' range
+        // 2. Add Date Filter
         if (frequency !== 'custom') {
+            // Filter by last 7, 30, 365 days
             query.date = {
-                $gt: moment().subtract(Number(frequency), "days").toDate()
+                $gt: moment().subtract(Number(frequency), "d").toDate()
             };
-        } else if (startDate && endDate) {
+        } else if (selectedDate) {
+            // Filter by custom range
             query.date = {
-                $gte: moment(startDate).toDate(),
-                $lte: moment(endDate).toDate(),
+                $gte: new Date(selectedDate[0]),
+                $lte: new Date(selectedDate[1])
             };
         }
 
-        // console.log(query);
+        // 3. Add Type Filter (Expense/Income)
+        if (type !== 'all') {
+            query.type = type;
+        }
 
-        const transactions = await Transaction.find(query);
+        // 4. Execute Query
+        const transactions = await TransactionSchema.find(query).sort({ date: -1 });
 
-        // console.log(transactions);
-
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
-            transactions: transactions,
+            transactions,
         });
-    } catch (err) {
-        return res.status(401).json({
+
+    } catch (error) {
+        res.status(500).json({
             success: false,
-            messages: err.message,
+            message: "Server Error",
         });
     }
 };
