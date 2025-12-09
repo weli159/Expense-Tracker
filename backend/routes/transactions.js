@@ -1,14 +1,11 @@
 import express from 'express';
-import { addTransactionController, deleteTransactionController, getAllTransactionController, updateTransactionController } from '../controllers/transactionController.js';
+import { addTransaction, deleteTransaction, getTransactions, updateTransaction } from '../controllers/transactionController.js';
 
 const router = express.Router();
 
-router.route("/addTransaction").post(addTransactionController);
-
-router.route("/getTransaction").post(getAllTransactionController);
-
-router.route("/deleteTransaction/:id").post(deleteTransactionController);
-
-router.route('/updateTransaction/:id').put(updateTransactionController);
+router.post('/addTransaction', addTransaction);
+router.post('/getTransactions', getTransactions);
+router.post('/deleteTransaction/:id', deleteTransaction);
+router.put('/updateTransaction/:id', updateTransaction);
 
 export default router;

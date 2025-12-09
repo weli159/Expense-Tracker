@@ -1,219 +1,106 @@
-
-import Transaction from "../models/TransactionModel.js";
-import User from "../models/UserSchema.js";
+import TransactionSchema from "../models/TransactionModel.js";
 import moment from "moment";
 
+export const addTransaction = async (req, res) => {
+    const { title, amount, category, description, date, transactionType, userId } = req.body;
 
-export const addTransactionController = async (req, res) => {
+    const transaction = TransactionSchema({
+        title,
+        amount,
+        category,
+        description,
+        date,
+        transactionType,
+        user: userId
+    })
+
     try {
-        const {
-            title,
-            amount,
-            description,
-            date,
-            category,
-            userId,
-            transactionType,
-        } = req.body;
-
-        // console.log(title, amount, description, date, category, userId, transactionType);
-
-        if (
-            !title ||
-            !amount ||
-            !description ||
-            !date ||
-            !category ||
-            !transactionType
-        ) {
-            return res.status(408).json({
-                success: false,
-                messages: "Please Fill all fields",
-            });
+        if (!title || !category || !description || !date) {
+            return res.status(400).json({success: false, message: 'All fields are required!'})
         }
-
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: "User not found",
-            });
+        if (amount <= 0 || !amount === 'number') {
+            return res.status(400).json({success: false, message: 'Amount must be a positive number!'})
         }
-
-        let newTransaction = await Transaction.create({
-            title: title,
-            amount: amount,
-            category: category,
-            description: description,
-            date: date,
-            user: userId,
-            transactionType: transactionType,
-        });
-
-        user.transactions.push(newTransaction);
-
-        user.save();
-
-        return res.status(200).json({
-            success: true,
-            message: "Transaction Added Successfully",
-        });
-    } catch (err) {
-        return res.status(401).json({
-            success: false,
-            messages: err.message,
-        });
+        await transaction.save()
+        
+        res.status(200).json({success: true, message: 'Transaction Added'}) 
+        
+    } catch (error) {
+        console.log("THE ERROR IS:", error);
+        res.status(500).json({success: false, message: 'Server Error', error: error.message})
     }
-};
+}
 
 export const getTransactions = async (req, res) => {
+  try {
+    // 1. Destructure the exact fields sent from Home.js
+    const { frequency, startDate, endDate, type, userId } = req.body;
+
+    const query = {
+      user: userId,
+    };
+
+    // 2. Fix Date Filter Logic
+    if (frequency !== 'custom') {
+      // Standard ranges (7, 30, 365)
+      query.date = {
+        $gt: moment().subtract(Number(frequency), "d").toDate()
+      };
+    } else if (startDate && endDate) {
+      // Custom Range (Fixed to match Frontend variable names)
+      query.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
+
+    // 3. Fix Type Filter Logic
+    if (type !== 'all') {
+      // Must search 'transactionType' column, NOT 'type'
+      query.transactionType = type;
+    }
+
+    // 4. Run Query
+    const transactions = await TransactionSchema.find(query).sort({ date: -1 });
+
+    res.status(200).json({
+      success: true,
+      transactions,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+export const deleteTransaction = async (req, res) => {
+    const {id} = req.params;
     try {
-        const { frequency, selectedDate, type, userId } = req.body;
-
-        // 1. Initialize query with user ID
-        const query = {
-            user: userId,
-        };
-
-        // 2. Add Date Filter
-        if (frequency !== 'custom') {
-            // Filter by last 7, 30, 365 days
-            query.date = {
-                $gt: moment().subtract(Number(frequency), "d").toDate()
-            };
-        } else if (selectedDate) {
-            // Filter by custom range
-            query.date = {
-                $gte: new Date(selectedDate[0]),
-                $lte: new Date(selectedDate[1])
-            };
-        }
-
-        // 3. Add Type Filter (Expense/Income)
-        if (type !== 'all') {
-            query.type = type;
-        }
-
-        // 4. Execute Query
-        const transactions = await TransactionSchema.find(query).sort({ date: -1 });
-
-        res.status(200).json({
-            success: true,
-            transactions,
-        });
-
+        await TransactionSchema.findByIdAndDelete(id)
+        res.status(200).json({success: true, message: 'Transaction Deleted'})
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Server Error",
-        });
+        res.status(500).json({success: false, message: 'Server Error'})
     }
-};
+}
 
+export const updateTransaction = async (req, res) => {
+    const { id } = req.params;
+    const { title, amount, category, description, date, transactionType } = req.body;
 
-export const deleteTransactionController = async (req, res) => {
     try {
-        const transactionId = req.params.id;
-        const userId = req.body.userId;
-
-        // console.log(transactionId, userId);
-
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-        const transactionElement = await Transaction.findByIdAndDelete(
-            transactionId
-        );
-
-        if (!transactionElement) {
-            return res.status(400).json({
-                success: false,
-                message: "transaction not found",
-            });
-        }
-
-        const transactionArr = user.transactions.filter(
-            (transaction) => transaction._id === transactionId
-        );
-
-        user.transactions = transactionArr;
-
-        user.save();
-
-        // await transactionElement.remove();
-
-        return res.status(200).json({
-            success: true,
-            message: `Transaction successfully deleted`,
+        await TransactionSchema.findByIdAndUpdate(id, {
+            title,
+            amount,
+            category,
+            description,
+            date,
+            transactionType // <--- FIXED: match Schema field
         });
-    } catch (err) {
-        return res.status(401).json({
-            success: false,
-            messages: err.message,
-        });
-    }
-};
-
-export const updateTransactionController = async (req, res) => {
-    try {
-        const transactionId = req.params.id;
-
-        const { title, amount, description, date, category, transactionType } =
-            req.body;
-
-        console.log(title, amount, description, date, category, transactionType);
-
-        const transactionElement = await Transaction.findById(transactionId);
-
-        if (!transactionElement) {
-            return res.status(400).json({
-                success: false,
-                message: "transaction not found",
-            });
-        }
-
-        if (title) {
-            transactionElement.title = title;
-        }
-
-        if (description) {
-            transactionElement.description = description;
-        }
-
-        if (amount) {
-            transactionElement.amount = amount;
-        }
-
-        if (category) {
-            transactionElement.category = category;
-        }
-        if (transactionType) {
-            transactionElement.transactionType = transactionType;
-        }
-
-        if (date) {
-            transactionElement.date = date;
-        }
-
-        await transactionElement.save();
-
-        // await transactionElement.remove();
-
-        return res.status(200).json({
-            success: true,
-            message: `Transaction Updated Successfully`,
-            transaction: transactionElement,
-        });
-    } catch (err) {
-        return res.status(401).json({
-            success: false,
-            messages: err.message,
-        });
+        res.status(200).json({ success: true, message: 'Transaction Updated' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
     }
 };
