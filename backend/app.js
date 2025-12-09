@@ -13,18 +13,21 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// Placeholder for Routes (Students B & D will uncomment these)
+// Routes
 import userRoutes from "./routes/userRoute.js";
 import transactionRoutes from "./routes/transactions.js";
- app.use("/api/auth", userRoutes);
+
+// Enable both route groups
+app.use("/api/auth", userRoutes);
 app.use("/api/v1", transactionRoutes);
 
+// Global Error Handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ 
-        success: false, 
+    res.status(500).json({
+        success: false,
         message: "Internal Server Error",
-        error: err.message 
+        error: err.message
     });
 });
 
@@ -38,4 +41,4 @@ const server = () => {
 
 server();
 
-export default app; // Export for testing
+export default app;
