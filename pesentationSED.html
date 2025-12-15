@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Final Defense</title>
+    
+    <!-- Reveal.js Themes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/night.min.css" id="theme">
+    
+    <!-- Syntax Highlighting (Monokai Theme for code blocks) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/monokai.min.css">
+
+    <style>
+        /* Custom Styles for the Presentation */
+        .container { display: flex; justify-content: space-between; gap: 20px; }
+        .col { flex: 1; text-align: left; }
+        .text-accent { color: #63ffdb !important; }
+        .text-warn { color: #ff7b7b !important; }
+        .text-dim { color: #888 !important; }
+        .small-text { font-size: 0.6em !important; }
+        .med-text { font-size: 0.8em !important; }
+        
+        /* Card Styling */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Lists */
+        ul { list-style-type: none; margin: 0; padding: 0; }
+        li { margin-bottom: 10px !important; padding-left: 15px; border-left: 3px solid #63ffdb; }
+        
+        /* Requirement Badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #333;
+            border: 1px solid #555;
+            font-size: 0.7em;
+            margin-right: 10px;
+            font-family: monospace;
+            color: #63ffdb;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Title -->
+            <section>
+                <h1 class="text-accent">Expense Tracker</h1>
+                <h3>Project Defense</h3>
+                <p class="med-text">Software Engineering & Development</p>
+                <div style="margin-top: 40px; font-size: 0.7em;">
+                    <p><strong>Developed by:</strong></p>
+                    <p>OUALI Youssef  • PAHLAWAN Léonard • YERRO Olivier • BOTHOREL Maxence</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: Business Need (BRD) -->
+            <section>
+                <h2>1. Business Context (BRD)</h2>
+                <div class="container">
+                    <div class="col">
+                        <div class="card fragment">
+                            <h4>The Problem</h4>
+                            <p class="med-text">Personal finance management is fragmented. Students and young professionals struggle to track daily expenses manually, leading to poor budgeting.</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card fragment">
+                            <h4>The Solution</h4>
+                            <p class="med-text">A centralized <strong>Expense Tracker</strong> to record spendings, categorize data, and visualize financial health in real-time.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="small-text fragment" style="margin-top: 20px;"><em>Objective: Reduce manual tracking time by 30%.</em></p>
+            </section>
+
+            <!-- SLIDE 3: Requirements (SRS) -->
+            <section>
+                <h2>2. Specifications (SRS)</h2>
+                <div class="container med-text">
+                    <div class="col">
+                        <h4 class="text-accent">Functional</h4>
+                        <ul>
+                            <li><span class="badge">FR-1</span> Secure Auth (Register/Login).</li>
+                            <li><span class="badge">FR-2</span> Expense CRUD (Add/Edit/Delete).</li>
+                            <li><span class="badge">FR-3</span> Categorization & Types.</li>
+                            <li><span class="badge">FR-4</span> Dashboard & Analytics.</li>
+                            <li><span class="badge">FR-5</span> Smart Filtering (Date/Type).</li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <h4 class="text-accent">Non-Functional</h4>
+                        <ul>
+                            <li><span class="badge">Perf</span> Dashboard loads < 2s.</li>
+                            <li><span class="badge">Sec</span> Passwords hashed (Bcrypt).</li>
+                            <li><span class="badge">Rel</span> 99.9% Data Availability.</li>
+                            <li><span class="badge">UX</span> Responsive Mobile/Desktop.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: Architecture (SDD) -->
+            <section>
+                <h2>3. Architecture & Tech Stack</h2>
+                <p class="med-text">We utilized a <strong>3-Tier MERN Architecture</strong>.</p>
+                
+                <div class="container small-text" style="align-items: center;">
+                    <div class="col">
+                        <ul>
+                            <li><strong>Frontend (Presentation):</strong> React.js, React-Bootstrap, Material UI. <br><span class="text-dim">Handles UI State & Visualization.</span></li>
+                            <li style="margin-top:20px;"><strong>Backend (Application):</strong> Node.js + Express. <br><span class="text-dim">REST API, Business Logic, Routing.</span></li>
+                            <li style="margin-top:20px;"><strong>Database (Data):</strong> MongoDB Atlas. <br><span class="text-dim">NoSQL Document Storage.</span></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <div class="card" style="text-align: center;">
+                            <pre><code class="plaintext">
+    Client (Browser)
+       ↕ (Axios/JSON)
+    Server (Express API)
+       ↕ (Mongoose)
+    DB (MongoDB Cloud)
+                            </code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: Design Choices -->
+            <section>
+                <h2>Design Choices</h2>
+                <p class="med-text">Evolution from initial design.</p>
+                <ul>
+                    <li><strong>SQL vs NoSQL:</strong>
+                        <p class="small-text">The initial PDF proposed MySQL. We pivoted to <strong>MongoDB</strong> because flexible JSON documents mapped perfectly to our frontend objects, speeding up development.</p>
+                    </li>
+                    <li><strong>Authentication:</strong>
+                        <p class="small-text">We chose <strong>JWT (Stateless)</strong> over Sessions for better scalability and easier debugging.</p>
+                    </li>
+                    <li><strong>API Communication:</strong>
+                        <p class="small-text">We used <strong>POST</strong> requests for complex filtering (instead of GET) to send secure, structured JSON bodies containing date ranges and arrays.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- SLIDE 6: Team Composition -->
+            <section>
+                <h2>Team Contributions</h2>
+                <div class="container small-text">
+                    <div class="col">
+                        <div class="card">
+                            <h4 class="text-accent">Youssef (Tech Lead)</h4>
+                            <ul>
+                                <li>Infrastructure & DevOps (CI/CD).</li>
+                                <li>Frontend Architecture.</li>
+                                <li>Merge Conflict Resolution.</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-accent">Léonard (Security)</h4>
+                            <ul>
+                                <li>JWT Authentication.</li>
+                                <li>Login/Register Controllers.</li>
+                                <li>Session Management.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <h4 class="text-accent">Olivier (Backend)</h4>
+                            <ul>
+                                <li>Transaction CRUD API.</li>
+                                <li>Database Models (Schemas).</li>
+                                <li>API Routes.</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-accent">Maxence (Logic)</h4>
+                            <ul>
+                                <li>Analytics Logic.</li>
+                                <li>Server-side Filtering (Moment.js).</li>
+                                <li>Data Visualization.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: Technical Challenge -->
+            <section>
+            
+                <h3>Technical Challenge & Resolution</h3>
+                <div class="text-left med-text card">
+                    <p><strong>The Issue:</strong> Two developers installed conflicting libraries (<code>moment</code> vs <code>helmet</code>) simultaneously on different branches.</p>
+                    <p><strong>The Result:</strong> A corrupted <code>package-lock.json</code> causing CI Pipeline failures and local crashes.</p>
+                    <p><strong>The Resolution (Tech Lead):</strong></p>
+                    <ul class="small-text">
+                        <li>Halted development to prevent further corruption.</li>
+                        <li>Manually synchronized <code>package.json</code> manifests.</li>
+                        <li>Performed a "Nuclear" clean (deleted <code>node_modules</code>) and regenerated the lockfile.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SLIDE 8: Key Implementation Details -->
+            <section>
+                <h2>Code Highlight: Smart Filtering</h2>
+                <p class="small-text">How we handled complex date filtering on the server.</p>
+                <pre><code class="javascript" data-trim data-line-numbers="2,5-10">
+// backend/controllers/transactionController.js
+export const getTransactions = async (req, res) => {
+  const { frequency, selectedDate } = req.body; 
+  const query = { user: req.body.userId };
+
+  if (frequency !== 'custom') {
+     // Dynamic Date Filtering using Moment.js
+     query.date = {
+        $gt: moment().subtract(Number(frequency), "d").toDate()
+     };
+  }
+  
+  const transactions = await TransactionSchema.find(query);
+};
+                </code></pre>
+            </section>
+
+            <!-- SLIDE 9: Validation -->
+            <section>
+                <h2>Validation & Testing</h2>
+                <div class="container med-text">
+                    <div class="col">
+                        <h4>Testing Strategy</h4>
+                        <ul>
+                            <li><strong>Unit Tests:</strong> Validated pure functions (e.g., calculations).</li>
+                            <li><strong>Integration Tests:</strong> Used <code>Supertest</code> to verify API endpoints (`/addTransaction`).</li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <h4>Acceptance Criteria</h4>
+                        <ul>
+                            <li>CRUD Operations persist to DB.</li>
+                            <li>Charts update dynamically.</li>
+                            <li>Invalid inputs (negative amounts) are rejected.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 10: Conclusion -->
+            <section>
+                <h2>Conclusion</h2>
+                <p class="med-text">We delivered a fully functional <strong>Smart Expense Tracker</strong>.</p>
+                <br>
+                <div class="container small-text">
+                    <div class="col">
+                        <ul>
+                            <li><strong>Scalable:</strong> Modular MVC Architecture.</li>
+                            <li><strong>Secure:</strong> Robust Authentication.</li>
+                            <li><strong>User-Centric:</strong> Visual Analytics & Insights.</li>
+                        </ul>
+                    </div>
+                </div>
+                <h3 class="text-accent" style="margin-top: 50px;">Questions?</h3>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Core Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    
+    <!-- Reveal.js Highlight Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            // Register the Highlight plugin
+            plugins: [ RevealHighlight ],
+            transition: 'convex' // none/fade/slide/convex/concave/zoom
+        });
+    </script>
+</body>
+</html>
